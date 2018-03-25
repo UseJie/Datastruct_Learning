@@ -1,7 +1,11 @@
-#include <stdio.c>
-#include <stlib.c>
-#include <malloc.c>
+#include <stdio.h>
+#include <stdlib.h>
+#define ElementType int 
+#define false 0
+#define true 1
+#define bool int 
 
+typedef struct LNode *PtrToLNode;
 struct LNode {
 	ElementType Data;
 	PtrToLNode Next;
@@ -10,15 +14,24 @@ struct LNode {
 typedef PtrToLNode Position;
 typedef PtrToLNode List;
 
+/*初始化*/
+List MakeEmpty()
+{
+	List L;
+	L = (List) malloc (sizeof(struct LNode));
+	L->Next = NULL;
+	
+	return L;
+}
 /*查找*/
 #define ERROR NULL
 
-Position Find( List L, ElemetType X )
+Position Find( List L, ElementType X )
 {
-	Positoin p = L;
+	Position p = L;
 	
 	while( p && p->Data != X )
-		p = p->next;
+		p = p->Next;
 	
 	if(p)
 		return p;
@@ -34,14 +47,13 @@ Position Find( List L, ElemetType X )
 bool Insert( List L, ElementType X, Position P )
 {
 	Position tmp, pre;
-	
-	for( pre = L; pre && pre->Next != P; pre = pre->Next );
+		for( pre = L; pre && pre->Next != P; pre = pre->Next );
 	if( pre == NULL ) {
 		printf("插入位置参数错误\n");
 		return false;
 	}
 	else {
-		tmp = (Postition) malloc (sizeof(struct LNode));
+		tmp = (Position) malloc (sizeof(struct LNode));
 		tmp->Data = X;
 		tmp->Next = P;
 		pre->Next = tmp;
@@ -63,4 +75,41 @@ bool Delete( List L, Position P )
 		free(P);
 		return true;
 	}
+}
+
+/*打印链表*/
+void PrintList( List L )
+{
+	Position p = L;
+	if( p == NULL ) {
+		printf("链表为空\n");
+		return;
+	}
+	
+	do {
+		printf("%d ", p->Data);
+		p = p->Next;
+	}while( p->Next != NULL);
+	return;
+}
+
+int main()
+{
+	List L = (List) malloc (sizeof( struct LNode)); 
+	L->Data = 0;
+	L->Next = NULL;
+	Position p = (List) malloc (sizeof (struct LNode ));
+	p->Data = 1;
+	p->Next = NULL;
+	L->Next = p;
+	List insertP = (List) malloc (sizeof( struct LNode));
+	insertP->Data = 2;
+	insertP->Next = NULL;
+	if( Insert( L, 1, p) ) {
+		printf("insert success!\n");
+	}
+	else 
+		printf("Insert failed\n");
+	PrintList( L );
+	return 0;
 }
