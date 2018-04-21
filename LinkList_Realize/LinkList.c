@@ -1,115 +1,52 @@
-#include <stdio.h>
-#include <stdlib.h>
-#define ElementType int 
-#define false 0
-#define true 1
-#define bool int 
-
-typedef struct LNode *PtrToLNode;
-struct LNode {
-	ElementType Data;
-	PtrToLNode Next;
-};
-
-typedef PtrToLNode Position;
-typedef PtrToLNode List;
-
-/*初始化*/
-List MakeEmpty()
-{
-	List L;
-	L = (List) malloc (sizeof(struct LNode));
-	L->Next = NULL;
-	
-	return L;
-}
-/*查找*/
-#define ERROR NULL
-
-Position Find( List L, ElementType X )
-{
-	Position p = L;
-	
-	while( p && p->Data != X )
-		p = p->Next;
-	
-	if(p)
-		return p;
-	else
-		return ERROR;
-}
-
-/*带头节点的插入*/
-/* 注意:在插入参数P上与课程视频有所不同，课程视频中i时序列位序（从1开始）
- * 是链表结点指针，在P之前插入新结点
+/*
+* LinkList.h 实现了:
+* MakeEmpty()	//链表的初始化
+* Find()		//查找
+* Insert()		//带头结点的插入
+* Delete()		//带头节点的删除
+* PrintList() 	//打印链表
 */
 
-bool Insert( List L, ElementType X, Position P )
-{
-	Position tmp, pre;
-		for( pre = L; pre && pre->Next != P; pre = pre->Next );
-	if( pre == NULL ) {
-		printf("插入位置参数错误\n");
-		return false;
-	}
-	else {
-		tmp = (Position) malloc (sizeof(struct LNode));
-		tmp->Data = X;
-		tmp->Next = P;
-		pre->Next = tmp;
-		return true;
-	}
-}
+#include <stdio.h>
+#include <stdlib.h>
+#include "LinkList.h"
 
-/*带头结点删除*/
-bool Delete( List L, Position P )
-{
-	Position tmp, pre;
-	for( pre = L; pre && pre->Next != P; pre = pre->Next );
-	if( pre == NULL || P == NULL ) {
-		printf("删除位置参数错误");
-		return false;
-	}
-	else {
-		pre->Next = P->Next;
-		free(P);
-		return true;
-	}
-}
-
-/*打印链表*/
-void PrintList( List L )
-{
-	Position p = L;
-	if( p == NULL ) {
-		printf("链表为空\n");
-		return;
-	}
-	
-	do {
-		printf("%d ", p->Data);
-		p = p->Next;
-	}while( p->Next != NULL);
-	return;
-}
+/*
+* 采用前插入式的方法构造链表
+* 插入完成后
+* 可以通过查找结点内容值返回结点地址后删除结点
+* 也可以通过指定结点然后删除
+*/
 
 int main()
 {
-	List L = (List) malloc (sizeof( struct LNode)); 
-	L->Data = 0;
-	L->Next = NULL;
-	Position p = (List) malloc (sizeof (struct LNode ));
-	p->Data = 1;
-	p->Next = NULL;
-	L->Next = p;
-	List insertP = (List) malloc (sizeof( struct LNode));
-	insertP->Data = 2;
-	insertP->Next = NULL;
-	if( Insert( L, 1, p) ) {
-		printf("insert success!\n");
+	int N, D;
+	printf("Please input the number of Link:");
+	scanf("%d", &N);
+	List L = MakeEmpty(); 	//初始化链表
+	L->Data = -1;			//头结点数据为-1
+	for( int i = 0; i < N; i++ ) {
+		printf("Please input the No.%d Data:\n", i+1 );
+		scanf("%d", &D);
+		Position p;
+		if( Insert( L, D, p)) {
+			printf("Insert No.%d Success!\n", i+1 );
+		}
+		else {
+			printf("Insert No.%d Failure!\n", i+1 );
+		}
+		printf("The LinkList is : \n");
+		PrintList( L );
 	}
-	else 
-		printf("Insert failed\n");
-	PrintList( L );
+	printf("Please input you want to delete data:");
+	scanf("%d", &D);
+	if( Delete(L,  Find( L, D ) ) ) {
+		printf("Delete Success!\n");
+		printf("The LinkList is : \n");
+		PrintList( L );
+	}
+	else {
+		printf("Delete Failure!\n");
+	}
 	return 0;
 }
